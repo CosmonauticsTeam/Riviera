@@ -7,7 +7,7 @@ project_root = os.path.abspath(os.path.join(current_dir, "..", ".."))
 lib_path = os.path.join(project_root, "Riviera", "target", "release", "Riviera.dll")
 
 if not os.path.exists(lib_path):
-    print(f"❌ Lib not found, try to 'cargo build --release': {lib_path}")
+    print(f"X - Lib not found, try to 'cargo build --release': {lib_path}")
     sys.exit(1)
 
 lib = ctypes.CDLL(lib_path)
