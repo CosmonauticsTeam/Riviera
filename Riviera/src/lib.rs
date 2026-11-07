@@ -1,6 +1,6 @@
-use noise::{core::perlin, Fbm, MultiFractal, NoiseFn, Perlin};
+use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 
-use std::slice;
+use std::{slice, thread};
 
 #[no_mangle]
 pub extern "C" fn BufferTest(_buffer: *mut f32, _len: usize) -> usize {
@@ -54,18 +54,28 @@ pub extern "C" fn Get2DNoiseHeightMap(
     // i dont know how fast it will work with java but i hope it will be faster than default noise lib
 
     let out = unsafe { slice::from_raw_parts_mut(buffer, length) };
-    for y in 0.._size_y {
-        for x in 0.._size_x {
-            let idx = y * _size_x + x;
 
-            let world_x = (_origin_x as f64 + x as f64) * scale;
-            let world_y = (_origin_y as f64 + y as f64) * scale;
+    let threads = thread::available_parallelism()
+        .map(|n| n.get())
+        .unwrap_or(1);
+    let rows_per = _size_y.div_ceil(threads);
+    let (ox, oy) = (_origin_x as f64, _origin_y as f64);
 
-            let height = perlin.get([world_x, world_y]);
-
-            out[idx] = height as f32;
+    thread::scope(|s| {
+        for (ci, chunk) in out.chunks_mut(rows_per * _size_x).enumerate() {
+            let perlin = &perlin;
+            s.spawn(move || {
+                for (ry, row) in chunk.chunks_mut(_size_x).enumerate() {
+                    let y = ci * rows_per + ry;
+                    let world_y = (oy + y as f64) * scale;
+                    for (x, o) in row.iter_mut().enumerate() {
+                        let world_x = (ox + x as f64) * scale;
+                        *o = perlin.get([world_x, world_y]) as f32;
+                    }
+                }
+            });
         }
-    }
+    });
 
     length
 }
