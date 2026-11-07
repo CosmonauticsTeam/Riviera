@@ -14,4 +14,7 @@ but here is.
 
 there is a png generated using pillow based on rust func result.
 
+
+the red grid show tile generating (smt like chunks)
+
 ![Smoke Test Debug](https://raw.githubusercontent.com/CosmonauticsTeam/Riviera/main/smoketests/win/Results/smoketest_debug.png)

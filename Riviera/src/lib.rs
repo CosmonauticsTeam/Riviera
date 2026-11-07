@@ -1,4 +1,4 @@
-use noise::{NoiseFn, Perlin};
+use noise::{core::perlin, Fbm, MultiFractal, NoiseFn, Perlin};
 
 use std::slice;
 
@@ -30,13 +30,22 @@ pub extern "C" fn Get2DNoiseHeightMap(
     _size_y: usize,
     _seed: u32,
     _scale: f64,
+    _origin_x: i32,
+    _origin_y: i32,
+    _octaves: usize,
+    _persistence: f64,
+    _lacunarity: f64,
 ) -> usize {
     /*
      *  returns heght map with the defined values for noise
+     *  use origing for seamless generation
      */
     let (buffer, length, scale) = (_buffer, (_size_x * _size_y), _scale);
 
-    let perlin = Perlin::new(_seed);
+    let perlin = Fbm::<Perlin>::new(_seed)
+        .set_octaves(_octaves)
+        .set_lacunarity(_lacunarity)
+        .set_persistence(_persistence);
 
     if buffer.is_null() {
         return 0;
@@ -49,10 +58,10 @@ pub extern "C" fn Get2DNoiseHeightMap(
         for x in 0.._size_x {
             let idx = y * _size_x + x;
 
-            let nx = x as f64 * scale;
-            let ny = y as f64 * scale;
+            let world_x = (_origin_x as f64 + x as f64) * scale;
+            let world_y = (_origin_y as f64 + y as f64) * scale;
 
-            let height = perlin.get([nx, ny]);
+            let height = perlin.get([world_x, world_y]);
 
             out[idx] = height as f32;
         }
