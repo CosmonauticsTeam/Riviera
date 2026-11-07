@@ -18,20 +18,20 @@ lib.Get2DNoiseHeightMap.argtypes = [
     ctypes.POINTER(ctypes.c_float),
     ctypes.c_size_t, ctypes.c_size_t,
     ctypes.c_uint32,
-    ctypes.c_double,
+    ctypes.c_float,
     ctypes.c_int32, ctypes.c_int32,
     ctypes.c_size_t,
-    ctypes.c_double, ctypes.c_double
+    ctypes.c_float, ctypes.c_float
 ]
 lib.Get2DNoiseHeightMap.restype = ctypes.c_size_t
 
 W, H = 512, 512
 SEED = rnd.randint(0, 10000)
-SCALE = 0.02
+SCALE = 0.005
 ORIGIN_X = 1000
 ORIGIN_Y = -500
 
-OCTAVES = 4
+OCTAVES = 5
 PERSISTENCE = 0.5
 LACUNARITY = 2.0
 
@@ -99,7 +99,6 @@ for i in range(0, H, TILE_SIZE):
     draw.line([(W, i), (W * 2, i)], fill=(255, 0, 0), width=1)
 
 out_path = os.path.join(current_dir, "results/smoketest_debug.png")
-
 os.makedirs(os.path.dirname(out_path), exist_ok=True)
 
 out_img.save(out_path)

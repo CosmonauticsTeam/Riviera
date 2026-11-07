@@ -7,4 +7,4 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-noise = "0.9"
+quick-noise = "=0.3.0"
