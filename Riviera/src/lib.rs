@@ -38,6 +38,7 @@ pub extern "C" fn Get2DNoiseHeightMap(
     /*
      *  returns heght map with the defined values for noise
      *  use origing for seamless generation
+     *
      */
     let (buffer, length, scale) = (_buffer, (_size_x * _size_y), _scale);
 
