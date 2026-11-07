@@ -12,6 +12,7 @@ smoke test
 ```bash
 cd smoketests
 cd [osX, linux, win]
+pip install -r requiremets.txt
 python [here u can pick one of smoketests]
 
 ```
